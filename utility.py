@@ -14,7 +14,10 @@ DeniedEmoji = '\U000026D4'
 
 MaxGameNumber = 15
 PotentialGames = [game for n in range(1, MaxGameNumber) for game in [str(n), f"b{n}", f"x{n}", f"r{n}"]]
+DeveloperIds = [962747550656528425, 966753006227955832, 224643391873482753]
 
+def authorize_dev_command(author: Union[nextcord.Member, nextcord.User]) -> bool:
+    return author.id in DeveloperIds
 
 def get_channel_type(channel_type: str):
     if channel_type.lower() in ['base', 'b3', 'b']:

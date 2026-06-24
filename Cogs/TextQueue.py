@@ -360,6 +360,19 @@ class TextQueue(commands.Cog):
             await utility.deny_command(ctx, "This command is restricted to moderators")
         await self.helper.log(f"{ctx.author.mention} has run the MoveToSpot command on {member.display_name}")
 
+    @commands.command()
+    async def GetQueueData(self, ctx: commands.Context):
+        """Debug command, restricted to developers"""
+        if utility.authorize_dev_command(ctx.author):
+            json_data = {}
+            for queue in self.queues:
+                json_data[queue] = self.queues[queue].to_dict()
+            json_str = json.dumps(json_data, indent=2)
+            bytes_data = io.BytesIO(json_str.encode("utf-8"))
+            await ctx.author.send(f"Reserve Entries json", file=nextcord.File(bytes_data, f"Entries.json"))
+        else:
+            await utility.deny_command(ctx, "You are not a developer")
+
 
 class FreeChannelNotificationView(nextcord.ui.View):
     def __init__(self, queue_cog: TextQueue, helper: utility.Helper, queue: list, game_number: str,

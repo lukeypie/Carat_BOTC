@@ -38,7 +38,6 @@ except Exception as e:
     logging.critical(message)
     sys.exit()
 
-developer_ids = [962747550656528425, 966753006227955832]
 
 intents = nextcord.Intents.all()
 allowedMentions = nextcord.AllowedMentions.all()
@@ -111,7 +110,7 @@ async def SendLogs(ctx: commands.Context, limit: int, level: Optional[str] = "ER
         await utility.deny_command(ctx, "Not a valid logging level")
         return
     if ctx.author.id == owner_id or \
-            (ctx.author.id in developer_ids and level.upper() in ["WARNING", "ERROR", "CRITICAL"]):
+            (utility.authorize_dev_command(ctx.author) and level.upper() in ["WARNING", "ERROR", "CRITICAL"]):
         log_level = LogLevelMapping[level.upper()]
         await utility.start_processing(ctx)
         with open(LogFile, "r") as logs:
@@ -244,7 +243,7 @@ async def ReloadMainFiles(ctx: commands.Context):
 
 @bot.command()
 async def Restart(ctx: commands.Context):
-    if ctx.author.id == owner_id or ctx.author.id in developer_ids:
+    if utility.authorize_dev_command(ctx.author):
         logging.warning("Trying to restart Carat...")
         # bot.close() finishes execution of bot.run(), so Carat terminates and is restarted by the loop in AutoRestart
         await bot.close()

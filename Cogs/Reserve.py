@@ -534,6 +534,19 @@ class Reserve(commands.Cog):
                 self.remove_entry(entry.owner)
                 self.announced[entry.owner] = entry
 
+    @commands.command()
+    async def GetReserveData(self, ctx: commands.Context):
+        """Debug command, restricted to developers"""
+        if utility.authorize_dev_command(ctx.author):
+            json_data = {}
+            for owner in self.entries:
+                json_data[owner] = self.entries[owner].to_dict()
+            json_str = json.dumps(json_data, indent=2)
+            bytes_data = io.BytesIO(json_str.encode("utf-8"))
+            await ctx.author.send(f"Reserve Entries json", file=nextcord.File(bytes_data, f"Entries.json"))
+        else:
+            await utility.deny_command(ctx, "You are not a developer")
+
 
 class PreSignupView(nextcord.ui.View):
     def __init__(self, cog: Reserve, helper: utility.Helper, entry: RSVPEntry):
